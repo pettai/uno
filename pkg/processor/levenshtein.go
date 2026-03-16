@@ -17,7 +17,7 @@ func newLevenshtein(maxDiffRatio float64) *levenshtein {
 
 func (le *levenshtein) process(in Line) Line {
 	in.IsNew = true
-	for _, l := range le.seen {
+	for i, l := range le.seen {
 		maxDiff := int(math.Ceil(float64(len(in.Tokens)) * le.maxDiffRatio))
 		lenDiff := len(in.Tokens) - len(l)
 		if lenDiff < 0 {
@@ -28,6 +28,9 @@ func (le *levenshtein) process(in Line) Line {
 		}
 		d := levenshtein2.LevenshteinDistanceK(in.Tokens, l, nil, nil, maxDiff)
 		if d <= maxDiff && d >= 0 {
+			if i > 0 {
+				le.seen[i], le.seen[i-1] = le.seen[i-1], le.seen[i]
+			}
 			in.IsNew = false
 			return in
 		}
