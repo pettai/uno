@@ -8,6 +8,8 @@ import (
 type levenshtein struct {
 	seen         [][]string
 	maxDiffRatio float64
+	v0           []int
+	v1           []int
 }
 
 func newLevenshtein(maxDiffRatio float64) *levenshtein {
@@ -26,7 +28,15 @@ func (le *levenshtein) process(in Line) Line {
 		if lenDiff > maxDiff {
 			continue
 		}
-		d := levenshtein2.LevenshteinDistanceK(in.Tokens, l, nil, nil, maxDiff)
+		maxLen := len(in.Tokens)
+		if len(l) > maxLen {
+			maxLen = len(l)
+		}
+		if cap(le.v0) < maxLen+1 {
+			le.v0 = make([]int, maxLen+1)
+			le.v1 = make([]int, maxLen+1)
+		}
+		d := levenshtein2.LevenshteinDistanceK(in.Tokens, l, le.v0[:maxLen+1], le.v1[:maxLen+1], maxDiff)
 		if d <= maxDiff && d >= 0 {
 			if i > 0 {
 				le.seen[i], le.seen[i-1] = le.seen[i-1], le.seen[i]
