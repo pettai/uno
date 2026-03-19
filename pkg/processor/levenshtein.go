@@ -1,6 +1,7 @@
 package processor
 
 import (
+	"hash/maphash"
 	levenshtein2 "github.com/psykhi/uno/pkg/levenshtein"
 	"math"
 )
@@ -10,15 +11,39 @@ type levenshtein struct {
 	maxDiffRatio float64
 	v0           []int
 	v1           []int
+	exactSeen    map[uint64]bool
+	hashSeed     maphash.Seed
 }
 
 func newLevenshtein(maxDiffRatio float64) *levenshtein {
 	seen := make([][]string, 0)
-	return &levenshtein{seen: seen, maxDiffRatio: maxDiffRatio}
+	return &levenshtein{
+		seen:         seen,
+		maxDiffRatio: maxDiffRatio,
+		exactSeen:    make(map[uint64]bool),
+		hashSeed:     maphash.MakeSeed(),
+	}
+}
+
+func (le *levenshtein) hashTokens(tokens []string) uint64 {
+	var h maphash.Hash
+	h.SetSeed(le.hashSeed)
+	for _, t := range tokens {
+		h.WriteString(t)
+		h.WriteByte(0)
+	}
+	return h.Sum64()
 }
 
 func (le *levenshtein) process(in Line) Line {
 	in.IsNew = true
+
+	hash := le.hashTokens(in.Tokens)
+	if le.exactSeen[hash] {
+		in.IsNew = false
+		return in
+	}
+
 	maxDiff := int(math.Ceil(float64(len(in.Tokens)) * le.maxDiffRatio))
 	for i, l := range le.seen {
 		lenDiff := len(in.Tokens) - len(l)
@@ -46,5 +71,6 @@ func (le *levenshtein) process(in Line) Line {
 		}
 	}
 	le.seen = append(le.seen, in.Tokens)
+	le.exactSeen[hash] = true
 	return in
 }
