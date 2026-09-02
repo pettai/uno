@@ -108,4 +108,3 @@ Jul  <N> <DATETIME> combo gpm[<N>]: *** info [mice.c(<N>)]:
 Jul  <N> <DATETIME> combo gpm[<N>]: imps2: Auto-detected intellimouse PS/<N>
 
 ```
-
