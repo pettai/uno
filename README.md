@@ -66,6 +66,15 @@ To see all options, use`uno -h`
 The distance option `-d` can be used to specify how different a new line must be from the others we've seen to be deemed
 new/unique. It can take a value between `0` and `1`. The default is `0.2` (20% difference)
 
+The edit budget is proportional to the number of tokens in the line
+(`ceil(tokens * d)`). Because the tokenizer returns a timestamp, IP address,
+UUID or MAC address as a *single* token rather than several, lines are shorter
+here than in a build without those token types, so the same `-d` is effectively
+stricter and reports more unique lines. Comparable granularity sits at roughly
+`-d 0.22`–`0.23`. Matching the unique-line *count* is not the same as producing
+the same clusters, so if you need to compare two builds, do it on your own logs
+rather than assuming a conversion factor.
+
 ### -all
 
 To see all input lines and highlight the new ones in red, use `-all`
@@ -77,15 +86,26 @@ uno -all my_log_file.txt
 
 ### -p
 
-Output log patterns (numbers are replaced by `*`)
+Output log patterns, with each variable value replaced by a placeholder naming
+its type:
+
+| Placeholder | Matches |
+|---|---|
+| `<N>` | any integer or decimal number |
+| `<DATETIME>` | RFC 3339 / ISO 8601 timestamps, Common Log Format timestamps, bare wall-clock times and bare dates |
+| `<IPV4>` | IPv4 addresses |
+| `<UUID>` | UUIDs |
+| `<EMAIL>` | email addresses |
+| `<MAC>` | MAC addresses |
 
 ```bash
 cat my_log_file.txt | uno -p
-uno -all my_log_file.txt
+uno -p my_log_file.txt
 
-Jun * *:*:* combo ftpd[*]: connection from * (*-*-*-*.bflony.adelphia.net) at Fri Jun * *:*:* * 
-Jun * *:*:* combo cups: cupsd shutdown succeeded
-Jul  * *:*:* combo gpm[*]: *** info [mice.c(*)]: 
-Jul  * *:*:* combo gpm[*]: imps2: Auto-detected intellimouse PS/*
+Jun <N> <DATETIME> combo ftpd[<N>]: connection from <IPV4> (<N>-<N>-<N>-<N>.bflony.adelphia.net) at Fri Jun <N> <DATETIME> <N>
+Jun <N> <DATETIME> combo cups: cupsd shutdown succeeded
+Jul  <N> <DATETIME> combo gpm[<N>]: *** info [mice.c(<N>)]:
+Jul  <N> <DATETIME> combo gpm[<N>]: imps2: Auto-detected intellimouse PS/<N>
 
 ```
+

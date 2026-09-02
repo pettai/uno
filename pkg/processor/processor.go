@@ -29,11 +29,11 @@ func (p *Processor) Process(in Line) Line {
 		// shapes as single tokens.
 		switch s.Type() {
 		case segment.Number:
-			t = "<NUMBER>"
+			t = "<N>"
 		case segment.Timestamp:
 			t = "<DATETIME>"
 		case segment.IPv4:
-			t = "<IP>"
+			t = "<IPV4>"
 		case segment.UUID:
 			t = "<UUID>"
 		case segment.Email:
