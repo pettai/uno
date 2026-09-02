@@ -3,8 +3,8 @@ module github.com/psykhi/uno
 go 1.18
 
 require (
-	github.com/blevesearch/segment v0.9.0
 	github.com/fatih/color v1.13.0
+	github.com/pettai/segment v0.10.0
 	github.com/stretchr/testify v1.8.0
 )
 

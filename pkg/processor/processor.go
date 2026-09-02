@@ -1,6 +1,6 @@
 package processor
 
-import "github.com/blevesearch/segment"
+import "github.com/pettai/segment"
 
 type Processor struct {
 	le *levenshtein
@@ -22,9 +22,24 @@ func (p *Processor) Process(in Line) Line {
 	in.Tokens = make([]string, 0)
 	for s.Segment() {
 		t := s.Text()
-		// Number tokens will always be considered equal, a simple way to ignore timestamps, ids etc.
-		if s.Type() == segment.Number {
-			t = "*"
+		// Every type below is variable data, so each collapses to a placeholder
+		// and lines differing only in those values compare equal.
+		//
+		// The tokenizer is a fork of blevesearch/segment that recognizes these
+		// shapes as single tokens.
+		switch s.Type() {
+		case segment.Number:
+			t = "<NUMBER>"
+		case segment.Timestamp:
+			t = "<DATETIME>"
+		case segment.IPv4:
+			t = "<IP>"
+		case segment.UUID:
+			t = "<UUID>"
+		case segment.Email:
+			t = "<EMAIL>"
+		case segment.MAC:
+			t = "<MAC>"
 		}
 		in.Tokens = append(in.Tokens, t)
 	}
