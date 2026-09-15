@@ -2,7 +2,7 @@ package processor
 
 import (
 	"hash/maphash"
-	levenshtein2 "github.com/pettai/uno/pkg/levenshtein"
+	levenshtein2 "github.com/psykhi/uno/pkg/levenshtein"
 	"math"
 )
 

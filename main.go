@@ -5,7 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/fatih/color"
-	"github.com/pettai/uno/pkg/processor"
+	"github.com/psykhi/uno/pkg/processor"
 	"log"
 	"os"
 	"strings"
