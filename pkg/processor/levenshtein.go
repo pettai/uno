@@ -1,7 +1,7 @@
 package processor
 
 import (
-	levenshtein2 "github.com/psykhi/uno/pkg/levenshtein"
+	levenshtein2 "github.com/pettai/uno/pkg/levenshtein"
 	"math"
 )
 

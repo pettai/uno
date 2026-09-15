@@ -1,4 +1,4 @@
-module github.com/psykhi/uno
+module github.com/pettai/uno
 
 go 1.18
 
